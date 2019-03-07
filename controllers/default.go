@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/orm"
 )
 
 type MainController struct {
@@ -9,8 +10,10 @@ type MainController struct {
 }
 
 type User struct {
-	Name string
-	Age int
+	Id string
+	Username string
+	Password string
+
 }
 
 func (c *MainController) Get() {
@@ -20,7 +23,13 @@ func (c *MainController) Get() {
 }
 
 func (c *MainController) Test() {
-	//user := &User{"zhaokai", 31}
-	c.Data["json"] = &User{"zhaokai", 31}
-	c.ServeJSON()
+	o := orm.NewOrm()
+	var users []User
+	n, err := o.Raw("select * from user").QueryRows(&users)
+	if err != nil {
+		println("查询失败")
+	}
+	println(n)
+	c.Ctx.Output.JSON(&users, true, false)
+
 }
